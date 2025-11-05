@@ -2,6 +2,14 @@
 
 Frontend Vue.js 3 para o sistema ZooRacoes.
 
+## 🧭 Navegação
+
+- 📖 [README Principal](../README.md) - Visão geral do projeto
+- 📋 [Documento MVP](../docs/DocumentoMVP.md) - Especificações e requisitos
+- 🚀 [Guia de Início](../docs/IniciarProjeto.md) - Configuração do ambiente
+
+---
+
 ## 🚀 Como começar
 
 ### Pré-requisitos
@@ -79,4 +87,18 @@ A configuração de CORS já está configurada no backend para permitir requisi�
 - **Tailwind CSS** - Framework CSS utilitário
 - **Vue Router** - Roteamento
 - **Axios** - Cliente HTTP
+
+---
+
+## 🧭 Navegação
+
+### Documentos Relacionados
+- 📖 [README Principal](../README.md) - Voltar para visão geral
+- 📋 [Documento MVP](../docs/DocumentoMVP.md) - Especificações e requisitos completos
+- 🚀 [Guia de Início](../docs/IniciarProjeto.md) - Configuração do ambiente
+
+### Informações Técnicas Relacionadas
+- 🏗️ Ver [Arquitetura do Sistema](../docs/DocumentoMVP.md#12-arquitetura-visão-geral)
+- 📋 Consultar [Requisitos Funcionais](../docs/DocumentoMVP.md#7-requisitos-funcionais-rf)
+- 💻 Ver [Tecnologias Utilizadas](../docs/DocumentoMVP.md#21-tecnologias-e-infraestrutura)
 
