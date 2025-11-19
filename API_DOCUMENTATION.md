@@ -23,6 +23,7 @@ A API usa autenticação JWT (JSON Web Token). Para obter um token, faça login 
 ### 🔐 Autenticação (`/auth`)
 
 #### POST `/auth/login`
+
 Autentica um usuário e retorna um token JWT.
 
 **Request Body:**
