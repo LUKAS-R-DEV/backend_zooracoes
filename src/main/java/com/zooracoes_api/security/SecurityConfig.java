@@ -30,10 +30,30 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(request -> {
                     var corsConfig = new org.springframework.web.cors.CorsConfiguration();
-                    corsConfig.setAllowedOrigins(java.util.List.of(
-                        "http://localhost:5173",  // Desenvolvimento local
-                        "https://frontend-zooracoes.vercel.app"  // Produção Vercel
-                    ));
+                    // Permite todas as origens localhost em desenvolvimento e Vercel em produção
+                    String origin = request.getHeader("Origin");
+                    if (origin != null) {
+                        if (origin.startsWith("http://localhost") || origin.startsWith("http://127.0.0.1")) {
+                            corsConfig.setAllowedOriginPatterns(java.util.List.of("http://localhost:*", "http://127.0.0.1:*"));
+                        } else if (origin.contains("vercel.app")) {
+                            // Permite qualquer subdomínio do Vercel dinamicamente
+                            corsConfig.setAllowedOrigins(java.util.List.of(origin));
+                        } else {
+                            // Fallback para produção
+                            corsConfig.setAllowedOrigins(java.util.List.of(
+                                "https://frontend-zooracoes.vercel.app"
+                            ));
+                        }
+                    } else {
+                        // Fallback: permite todas as origens conhecidas
+                        corsConfig.setAllowedOriginPatterns(java.util.List.of(
+                            "http://localhost:*",
+                            "http://127.0.0.1:*"
+                        ));
+                        corsConfig.setAllowedOrigins(java.util.List.of(
+                            "https://frontend-zooracoes.vercel.app"
+                        ));
+                    }
                     corsConfig.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
                     corsConfig.setAllowedHeaders(java.util.List.of("*"));
                     corsConfig.setAllowCredentials(true);

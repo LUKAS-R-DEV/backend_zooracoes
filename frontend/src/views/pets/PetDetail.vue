@@ -114,11 +114,11 @@
           <div v-for="prescription in prescriptionsList" :key="prescription.id" style="padding: var(--spacing-md); border-bottom: 1px solid var(--color-gray-200); display: flex; align-items: start; gap: 12px">
             <Icon name="pill" :size="20" style="color: var(--color-primary); flex-shrink: 0; margin-top: 2px" />
             <div style="flex: 1">
-              <div style="font-weight: 500">{{ prescription.medication }}</div>
+              <div style="font-weight: 500">{{ prescription.medicationName || prescription.medication || '-' }}</div>
               <div style="font-size: 0.875rem; color: var(--color-gray-600)">
                 Dosagem: {{ prescription.dosage }}
               </div>
-              <div style="font-size: 0.875rem; color: var(--color-gray-600)">
+              <div v-if="prescription.startDate && prescription.endDate" style="font-size: 0.875rem; color: var(--color-gray-600)">
                 Período: {{ formatDate(prescription.startDate) }} - {{ formatDate(prescription.endDate) }}
               </div>
               <div v-if="prescription.veterinarian" style="font-size: 0.875rem; color: var(--color-gray-600)">
@@ -126,6 +126,14 @@
               </div>
             </div>
             <div style="display: flex; gap: 8px; align-items: center">
+              <Button 
+                variant="primary" 
+                size="sm"
+                icon="eye"
+                @click="$router.push(`/prescriptions/${prescription.id}?from=pet`)"
+              >
+                Ver
+              </Button>
               <Button 
                 variant="secondary" 
                 size="sm"

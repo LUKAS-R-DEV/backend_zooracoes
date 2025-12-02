@@ -168,7 +168,12 @@ const handleSubmit = async () => {
 
   try {
     const data = {
-      ...form,
+      medicationName: form.medication,
+      dosage: form.dosage,
+      instructions: form.notes || '',
+      startDate: form.startDate || null,
+      endDate: form.endDate || null,
+      veterinarian: form.veterinarian || null,
       petId: parseInt(props.petId)
     }
 
@@ -190,12 +195,12 @@ watch(() => props.prescriptionId, async (newId) => {
   if (newId) {
     await fetchPrescription(newId)
     if (prescription.value) {
-      form.medication = prescription.value.medication || ''
+      form.medication = prescription.value.medicationName || prescription.value.medication || ''
       form.dosage = prescription.value.dosage || ''
-      form.startDate = prescription.value.startDate ? prescription.value.startDate.split('T')[0] : ''
-      form.endDate = prescription.value.endDate ? prescription.value.endDate.split('T')[0] : ''
+      form.startDate = prescription.value.startDate ? (prescription.value.startDate.split('T')[0] || prescription.value.startDate) : ''
+      form.endDate = prescription.value.endDate ? (prescription.value.endDate.split('T')[0] || prescription.value.endDate) : ''
       form.veterinarian = prescription.value.veterinarian || ''
-      form.notes = prescription.value.notes || ''
+      form.notes = prescription.value.instructions || prescription.value.notes || ''
     }
   } else {
     // Limpar formulário quando não há ID (modo criar)
