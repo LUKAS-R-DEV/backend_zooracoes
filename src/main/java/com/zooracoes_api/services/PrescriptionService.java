@@ -34,6 +34,9 @@ public class PrescriptionService {
         p.setMedicationName(dto.medicationName());
         p.setDosage(dto.dosage());
         p.setInstructions(dto.instructions());
+        p.setStartDate(dto.startDate());
+        p.setEndDate(dto.endDate());
+        p.setVeterinarian(dto.veterinarian());
 
         prescriptionRepository.save(p);
 
@@ -81,6 +84,9 @@ public class PrescriptionService {
         p.setMedicationName(dto.medicationName());
         p.setDosage(dto.dosage());
         p.setInstructions(dto.instructions());
+        p.setStartDate(dto.startDate());
+        p.setEndDate(dto.endDate());
+        p.setVeterinarian(dto.veterinarian());
 
         prescriptionRepository.save(p);
 
@@ -106,6 +112,9 @@ public class PrescriptionService {
                 p.getMedicationName(),
                 p.getDosage(),
                 p.getInstructions(),
+                p.getStartDate(),
+                p.getEndDate(),
+                p.getVeterinarian(),
                 p.getPrescribedAt()
         );
     }

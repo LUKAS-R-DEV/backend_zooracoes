@@ -3,6 +3,7 @@ package com.zooracoes_api.entities;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,6 +24,12 @@ public class PrescriptionEntity {
     private String dosage;
 
     private String instructions;
+
+    private LocalDate startDate;
+
+    private LocalDate endDate;
+
+    private String veterinarian;
 
     private LocalDateTime prescribedAt = LocalDateTime.now();
 
