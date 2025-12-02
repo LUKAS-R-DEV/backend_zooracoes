@@ -113,12 +113,22 @@ import Icon from '@/components/common/Icon.vue'
 import Loading from '@/components/common/Loading.vue'
 import { useTutors } from '@/composables/useTutors'
 import { useToast } from '@/composables/useToast'
+import { useConfirmModal } from '@/composables/useConfirmModal'
 
 const toast = useToast()
+const confirmModal = useConfirmModal()
 const { tutors, loading, error, fetchTutors, deleteTutor } = useTutors()
 
 const handleDelete = async (id) => {
-  if (confirm('Tem certeza que deseja excluir este tutor?')) {
+  const confirmed = await confirmModal.showConfirm({
+    title: 'Excluir Tutor',
+    message: 'Tem certeza que deseja excluir este tutor? Esta ação não pode ser desfeita.',
+    confirmText: 'Excluir',
+    cancelText: 'Cancelar',
+    variant: 'danger'
+  })
+
+  if (confirmed) {
     try {
       await deleteTutor(id)
       await fetchTutors() // Recarrega a lista após exclusão

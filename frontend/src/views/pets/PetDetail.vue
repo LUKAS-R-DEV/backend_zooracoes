@@ -180,9 +180,11 @@ import { usePets } from '@/composables/usePets'
 import { useVaccines } from '@/composables/useVaccines'
 import { usePrescriptions } from '@/composables/usePrescriptions'
 import { useToast } from '@/composables/useToast'
+import { useConfirmModal } from '@/composables/useConfirmModal'
 import { formatters } from '@/utils/formatters'
 
 const toast = useToast()
+const confirmModal = useConfirmModal()
 
 const route = useRoute()
 const { pet, loading, error, fetchPet } = usePets()
@@ -208,9 +210,18 @@ const handleEditVaccine = (vaccine) => {
 }
 
 const handleDeleteVaccine = async (vaccineId) => {
-  if (!confirm('Tem certeza que deseja excluir esta vacina?')) {
+  const confirmed = await confirmModal.showConfirm({
+    title: 'Excluir Vacina',
+    message: 'Tem certeza que deseja excluir esta vacina? Esta ação não pode ser desfeita.',
+    confirmText: 'Excluir',
+    cancelText: 'Cancelar',
+    variant: 'danger'
+  })
+
+  if (!confirmed) {
     return
   }
+
   try {
     await deleteVaccine(vaccineId)
     const vaccinesData = await fetchVaccinesByPet(route.params.id)
@@ -244,9 +255,18 @@ const handleEditPrescription = (prescription) => {
 }
 
 const handleDeletePrescription = async (prescriptionId) => {
-  if (!confirm('Tem certeza que deseja excluir esta prescrição?')) {
+  const confirmed = await confirmModal.showConfirm({
+    title: 'Excluir Prescrição',
+    message: 'Tem certeza que deseja excluir esta prescrição? Esta ação não pode ser desfeita.',
+    confirmText: 'Excluir',
+    cancelText: 'Cancelar',
+    variant: 'danger'
+  })
+
+  if (!confirmed) {
     return
   }
+
   try {
     await deletePrescription(prescriptionId)
     const prescriptionsData = await fetchPrescriptionsByPet(route.params.id)

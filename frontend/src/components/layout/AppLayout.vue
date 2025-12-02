@@ -7,16 +7,20 @@
         <slot />
       </div>
     </div>
+    <ConfirmModalContainer />
   </div>
 </template>
 
 <script setup>
 import Sidebar from './Sidebar.vue'
 import Header from './Header.vue'
+import ConfirmModalContainer from '@/components/common/ConfirmModalContainer.vue'
 </script>
 
 <style scoped>
 </style>
+
+
 
 
 

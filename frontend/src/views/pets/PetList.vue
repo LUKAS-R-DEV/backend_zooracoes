@@ -127,12 +127,22 @@ import Icon from '@/components/common/Icon.vue'
 import Loading from '@/components/common/Loading.vue'
 import { usePets } from '@/composables/usePets'
 import { useToast } from '@/composables/useToast'
+import { useConfirmModal } from '@/composables/useConfirmModal'
 
 const toast = useToast()
+const confirmModal = useConfirmModal()
 const { pets, loading, error, fetchPets, deletePet } = usePets()
 
 const handleDelete = async (id) => {
-  if (confirm('Tem certeza que deseja excluir este pet?')) {
+  const confirmed = await confirmModal.showConfirm({
+    title: 'Excluir Pet',
+    message: 'Tem certeza que deseja excluir este pet? Esta ação não pode ser desfeita.',
+    confirmText: 'Excluir',
+    cancelText: 'Cancelar',
+    variant: 'danger'
+  })
+
+  if (confirmed) {
     try {
       await deletePet(id)
       await fetchPets()

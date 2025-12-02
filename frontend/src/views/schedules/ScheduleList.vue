@@ -141,10 +141,12 @@ import Loading from '@/components/common/Loading.vue'
 import StatusChangeModal from '@/components/schedules/StatusChangeModal.vue'
 import { useSchedules } from '@/composables/useSchedules'
 import { useToast } from '@/composables/useToast'
+import { useConfirmModal } from '@/composables/useConfirmModal'
 import { formatters } from '@/utils/formatters'
 import { SCHEDULE_STATUS_LABELS } from '@/utils/constants'
 
 const toast = useToast()
+const confirmModal = useConfirmModal()
 const { schedules, loading, error, fetchSchedules, deleteSchedule, updateScheduleStatus } = useSchedules()
 
 const selectedSchedule = ref(null)
@@ -204,7 +206,15 @@ const handleStatusChange = async (newStatus) => {
 }
 
 const handleDelete = async (id) => {
-  if (confirm('Tem certeza que deseja excluir este agendamento?')) {
+  const confirmed = await confirmModal.showConfirm({
+    title: 'Excluir Agendamento',
+    message: 'Tem certeza que deseja excluir este agendamento? Esta ação não pode ser desfeita.',
+    confirmText: 'Excluir',
+    cancelText: 'Cancelar',
+    variant: 'danger'
+  })
+
+  if (confirmed) {
     try {
       await deleteSchedule(id)
       await fetchSchedules()

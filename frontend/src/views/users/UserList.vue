@@ -114,10 +114,12 @@ import Button from '@/components/common/Button.vue'
 import Icon from '@/components/common/Icon.vue'
 import Loading from '@/components/common/Loading.vue'
 import { useUsers } from '@/composables/useUsers'
+import { useConfirmModal } from '@/composables/useConfirmModal'
 import { USER_ROLE_LABELS } from '@/utils/constants'
 
 const { user: currentUser } = useAuth()
 const toast = useToast()
+const confirmModal = useConfirmModal()
 const { users, loading, error, fetchUsers, deleteUser } = useUsers()
 
 const canCreate = computed(() => {
@@ -146,7 +148,15 @@ const getRoleBadgeClass = (role) => {
 }
 
 const handleDelete = async (id) => {
-  if (confirm('Tem certeza que deseja excluir este usuário?')) {
+  const confirmed = await confirmModal.showConfirm({
+    title: 'Excluir Usuário',
+    message: 'Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.',
+    confirmText: 'Excluir',
+    cancelText: 'Cancelar',
+    variant: 'danger'
+  })
+
+  if (confirmed) {
     try {
       await deleteUser(id)
       await fetchUsers()
@@ -173,6 +183,8 @@ onMounted(() => {
   font-weight: 600;
 }
 </style>
+
+
 
 
 

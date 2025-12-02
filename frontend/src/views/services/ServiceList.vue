@@ -113,10 +113,12 @@ import Icon from '@/components/common/Icon.vue'
 import Loading from '@/components/common/Loading.vue'
 import { useServices } from '@/composables/useServices'
 import { useToast } from '@/composables/useToast'
+import { useConfirmModal } from '@/composables/useConfirmModal'
 import { useAuthStore } from '@/stores/auth'
 import { formatters } from '@/utils/formatters'
 
 const toast = useToast()
+const confirmModal = useConfirmModal()
 const { services, loading, error, fetchServices, deleteService } = useServices()
 const { hasRole } = useAuthStore()
 
@@ -128,7 +130,15 @@ const formatCurrency = (value) => {
 }
 
 const handleDelete = async (id) => {
-  if (confirm('Tem certeza que deseja excluir este serviço?')) {
+  const confirmed = await confirmModal.showConfirm({
+    title: 'Excluir Serviço',
+    message: 'Tem certeza que deseja excluir este serviço? Esta ação não pode ser desfeita.',
+    confirmText: 'Excluir',
+    cancelText: 'Cancelar',
+    variant: 'danger'
+  })
+
+  if (confirmed) {
     try {
       await deleteService(id)
       await fetchServices()
