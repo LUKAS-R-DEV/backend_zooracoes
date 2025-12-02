@@ -6,5 +6,8 @@ public record ScheduleDTO(
         Long petId,
         Long serviceId,
         LocalDateTime dateTime,
-        String notes
+        String notes,
+        String petName,
+        String serviceName,
+        String tutorName
 ) {}
