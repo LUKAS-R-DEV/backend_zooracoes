@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface PrescriptionRepository extends JpaRepository<PrescriptionEntity, Long> {
     List<PrescriptionEntity> findByPetId(Long petId);
+    List<PrescriptionEntity> findByPetIdAndActiveTrue(Long petId);
+    org.springframework.data.domain.Page<PrescriptionEntity> findByActiveTrue(org.springframework.data.domain.Pageable pageable);
 }

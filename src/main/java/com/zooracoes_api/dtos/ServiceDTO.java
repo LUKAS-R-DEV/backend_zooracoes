@@ -1,3 +1,3 @@
 package com.zooracoes_api.dtos;
 
-public record ServiceDTO(String name, String description) {}
+public record ServiceDTO(String name, String description, double price, Integer duration) {}

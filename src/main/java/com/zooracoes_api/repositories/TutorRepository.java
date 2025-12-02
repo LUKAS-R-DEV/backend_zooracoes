@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TutorRepository extends JpaRepository<TutorEntity, Long> {
     Page<TutorEntity> findAll(Pageable pageable);
+    Page<TutorEntity> findByActiveTrue(Pageable pageable);
+    Page<TutorEntity> findByActiveFalse(Pageable pageable);
 }

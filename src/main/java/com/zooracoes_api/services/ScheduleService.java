@@ -19,25 +19,26 @@ import java.util.stream.Collectors;
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
-    private final TutorRepository tutorRepository;
     private final PetRepository petRepository;
     private final ServiceRepository serviceRepository;
 
-    public ScheduleService(ScheduleRepository scheduleRepository, TutorRepository tutorRepository,
+    public ScheduleService(ScheduleRepository scheduleRepository,
                            PetRepository petRepository, ServiceRepository serviceRepository) {
 
         this.scheduleRepository = scheduleRepository;
-        this.tutorRepository = tutorRepository;
         this.petRepository = petRepository;
         this.serviceRepository = serviceRepository;
     }
 
     public ScheduleResponseDTO create(ScheduleDTO dto) {
-        TutorEntity tutor = tutorRepository.findById(dto.tutorId())
-                .orElseThrow(() -> new RuntimeException("Tutor não encontrado"));
-
         PetEntity pet = petRepository.findById(dto.petId())
                 .orElseThrow(() -> new RuntimeException("Pet não encontrado"));
+
+        // Obter o tutor do pet
+        TutorEntity tutor = pet.getTutor();
+        if (tutor == null) {
+            throw new RuntimeException("Pet não possui tutor associado");
+        }
 
         ServiceEntity service = serviceRepository.findById(dto.serviceId())
                 .orElseThrow(() -> new RuntimeException("Serviço não encontrado"));
@@ -48,6 +49,7 @@ public class ScheduleService {
         schedule.setService(service);
         schedule.setDateTime(dto.dateTime());
         schedule.setNotes(dto.notes());
+        schedule.setStatus(ScheduleStatus.PENDING);
 
         scheduleRepository.save(schedule);
 
@@ -55,7 +57,8 @@ public class ScheduleService {
     }
 
     public List<ScheduleResponseDTO> listAll() {
-        return scheduleRepository.findAll()
+        return scheduleRepository.findByActiveTrue(org.springframework.data.domain.Pageable.unpaged())
+                .getContent()
                 .stream().map(this::toResponse).collect(Collectors.toList());
     }
 
@@ -79,6 +82,10 @@ public class ScheduleService {
     public ScheduleResponseDTO findById(Long id) {
         ScheduleEntity schedule = scheduleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Agendamento não encontrado"));
+        
+        if (!schedule.isActive()) {
+            throw new RuntimeException("Agendamento não encontrado");
+        }
 
         return toResponse(schedule);
     }
@@ -86,12 +93,19 @@ public class ScheduleService {
     public ScheduleResponseDTO update(Long id, ScheduleDTO dto) {
         ScheduleEntity schedule = scheduleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Agendamento não encontrado"));
-
-        TutorEntity tutor = tutorRepository.findById(dto.tutorId())
-                .orElseThrow(() -> new RuntimeException("Tutor não encontrado"));
+        
+        if (!schedule.isActive()) {
+            throw new RuntimeException("Agendamento não encontrado");
+        }
 
         PetEntity pet = petRepository.findById(dto.petId())
                 .orElseThrow(() -> new RuntimeException("Pet não encontrado"));
+
+        // Obter o tutor do pet
+        TutorEntity tutor = pet.getTutor();
+        if (tutor == null) {
+            throw new RuntimeException("Pet não possui tutor associado");
+        }
 
         ServiceEntity service = serviceRepository.findById(dto.serviceId())
                 .orElseThrow(() -> new RuntimeException("Serviço não encontrado"));
@@ -107,11 +121,30 @@ public class ScheduleService {
         return toResponse(schedule);
     }
 
+    public ScheduleResponseDTO updateStatus(Long id, ScheduleStatus status) {
+        ScheduleEntity schedule = scheduleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Agendamento não encontrado"));
+        
+        if (!schedule.isActive()) {
+            throw new RuntimeException("Agendamento não encontrado");
+        }
+
+        schedule.setStatus(status);
+        scheduleRepository.save(schedule);
+
+        return toResponse(schedule);
+    }
+
     public void cancel(Long id) {
         ScheduleEntity schedule = scheduleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Agendamento não encontrado"));
+        
+        if (!schedule.isActive()) {
+            throw new RuntimeException("Agendamento não encontrado");
+        }
 
         schedule.setStatus(ScheduleStatus.CANCELLED);
+        schedule.setActive(false);
         scheduleRepository.save(schedule);
     }
 
@@ -122,7 +155,10 @@ public class ScheduleService {
                 s.getPet().getId(),
                 s.getService().getId(),
                 s.getDateTime(),
-                s.getNotes(),
+                s.getNotes() != null ? s.getNotes() : "",
+                s.getPet().getName(),
+                s.getService().getName(),
+                s.getTutor().getName(),
                 s.getStatus()
         );
     }

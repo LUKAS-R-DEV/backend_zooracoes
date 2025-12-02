@@ -13,8 +13,11 @@ import java.util.List;
 
 public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> {
     List<ScheduleEntity> findByDateTimeBetween(LocalDateTime start, LocalDateTime end);
+    List<ScheduleEntity> findByDateTimeBetweenAndActiveTrue(LocalDateTime start, LocalDateTime end);
     
-    @Query("SELECT s FROM ScheduleEntity s WHERE " +
+    Page<ScheduleEntity> findByActiveTrue(Pageable pageable);
+    
+    @Query("SELECT s FROM ScheduleEntity s WHERE s.active = true AND " +
            "(:date IS NULL OR CAST(s.dateTime AS date) = :date) AND " +
            "(:serviceId IS NULL OR s.service.id = :serviceId)")
     Page<ScheduleEntity> findByFilters(@Param("date") LocalDate date,

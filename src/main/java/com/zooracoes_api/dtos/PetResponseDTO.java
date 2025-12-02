@@ -9,5 +9,6 @@ public record PetResponseDTO(
         String breed,
         Double weight,
         LocalDate birthDate,
-        Long tutorId
+        Long tutorId,
+        String tutorName
 ) {}

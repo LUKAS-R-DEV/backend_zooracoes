@@ -6,6 +6,7 @@ import com.zooracoes_api.dtos.TutorResponseDTO;
 import com.zooracoes_api.services.TutorService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,8 +47,8 @@ public class TutorController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('GESTOR')")
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable Long id) {
+    public ResponseEntity<String> delete(@PathVariable Long id) {
         service.delete(id);
-        return "Tutor desativado com sucesso";
+        return ResponseEntity.ok("Tutor desativado com sucesso");
     }
 }

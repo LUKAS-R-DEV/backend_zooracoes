@@ -8,5 +8,6 @@ public record PetDTO(
         String breed,
         Double weight,
         LocalDate birthDate,
-        Long tutorId
+        Long tutorId,
+        String tutorName
 ) {}

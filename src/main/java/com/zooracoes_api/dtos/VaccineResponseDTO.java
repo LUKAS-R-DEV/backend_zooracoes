@@ -5,6 +5,7 @@ import java.time.LocalDate;
 public record VaccineResponseDTO(
         Long id,
         Long petId,
+        String petName,
         String vaccineName,
         LocalDate appliedDate,
         LocalDate nextDoseDate,

@@ -10,6 +10,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Configuration
 public class DataSeeder {
@@ -103,19 +105,43 @@ public class DataSeeder {
                 ServiceEntity s1 = new ServiceEntity();
                 s1.setName("Banho");
                 s1.setDescription("Banho completo no pet");
+                s1.setPrice(50.0);
+                s1.setDuration(30);
                 serviceRepository.save(s1);
 
                 ServiceEntity s2 = new ServiceEntity();
                 s2.setName("Tosa");
                 s2.setDescription("Tosa padrão completa");
+                s2.setPrice(60.0);
+                s2.setDuration(45);
                 serviceRepository.save(s2);
 
                 ServiceEntity s3 = new ServiceEntity();
                 s3.setName("Consulta");
                 s3.setDescription("Consulta veterinária geral");
+                s3.setPrice(100.0);
+                s3.setDuration(60);
                 serviceRepository.save(s3);
 
                 System.out.println("Seed: Serviços criados.");
+            } else {
+                // Atualizar serviços existentes que podem ter price ou duration como null
+                List<ServiceEntity> servicesWithNulls = serviceRepository.findAll().stream()
+                    .filter(s -> s.getPrice() == null || s.getDuration() == null)
+                    .collect(java.util.stream.Collectors.toList());
+                
+                if (!servicesWithNulls.isEmpty()) {
+                    for (ServiceEntity service : servicesWithNulls) {
+                        if (service.getPrice() == null) {
+                            service.setPrice(50.0);
+                        }
+                        if (service.getDuration() == null) {
+                            service.setDuration(30);
+                        }
+                        serviceRepository.save(service);
+                    }
+                    System.out.println("Seed: " + servicesWithNulls.size() + " serviços atualizados com valores padrão.");
+                }
             }
 
             // ---------------------------

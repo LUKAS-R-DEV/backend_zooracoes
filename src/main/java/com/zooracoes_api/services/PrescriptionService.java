@@ -41,7 +41,8 @@ public class PrescriptionService {
     }
 
     public List<PrescriptionResponseDTO> findAll() {
-        return prescriptionRepository.findAll()
+        return prescriptionRepository.findByActiveTrue(org.springframework.data.domain.Pageable.unpaged())
+                .getContent()
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
@@ -50,20 +51,28 @@ public class PrescriptionService {
     public PrescriptionResponseDTO findById(Long id) {
         PrescriptionEntity p = prescriptionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Prescrição não encontrada"));
+        
+        if (!p.isActive()) {
+            throw new RuntimeException("Prescrição não encontrada");
+        }
+        
         return toResponse(p);
     }
 
     public List<PrescriptionResponseDTO> listByPet(Long petId) {
-        return prescriptionRepository.findByPetId(petId)
+        return prescriptionRepository.findByPetIdAndActiveTrue(petId)
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 
     public PrescriptionResponseDTO update(Long id, PrescriptionDTO dto) {
-
         PrescriptionEntity p = prescriptionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Prescrição não encontrada"));
+        
+        if (!p.isActive()) {
+            throw new RuntimeException("Prescrição não encontrada");
+        }
 
         PetEntity pet = petRepository.findById(dto.petId())
                 .orElseThrow(() -> new RuntimeException("Pet não encontrado"));
@@ -81,6 +90,10 @@ public class PrescriptionService {
     public void delete(Long id) {
         PrescriptionEntity p = prescriptionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Prescrição não encontrada"));
+        
+        if (!p.isActive()) {
+            throw new RuntimeException("Prescrição não encontrada");
+        }
 
         p.setActive(false);
         prescriptionRepository.save(p);

@@ -32,7 +32,8 @@ public class AuthController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/register")
     public ResponseEntity<String> register(@Valid @RequestBody RegisterDTO dto) {
-        if (userService.findByEmail(dto.email()).isPresent()) {
+        // Verifica email em qualquer status (ativo ou inativo) para evitar duplicação
+        if (userService.findByEmailAnyStatus(dto.email()).isPresent()) {
             throw new RuntimeException("Email já cadastrado");
         }
         userService.create(dto);

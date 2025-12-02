@@ -11,5 +11,8 @@ public record ScheduleResponseDTO(
         Long serviceId,
         LocalDateTime dateTime,
         String notes,
+        String petName,
+        String serviceName,
+        String tutorName,
         ScheduleStatus status
 ) {}

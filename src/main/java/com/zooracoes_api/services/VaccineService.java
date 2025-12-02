@@ -41,7 +41,8 @@ public class VaccineService {
     }
 
     public List<VaccineResponseDTO> listAll() {
-        return vaccineRepository.findAll()
+        return vaccineRepository.findByActiveTrue(org.springframework.data.domain.Pageable.unpaged())
+                .getContent()
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
@@ -50,11 +51,16 @@ public class VaccineService {
     public VaccineResponseDTO findById(Long id) {
         VaccineEntity v = vaccineRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Registro de vacina não encontrado"));
+        
+        if (!v.isActive()) {
+            throw new RuntimeException("Registro de vacina não encontrado");
+        }
+        
         return toResponse(v);
     }
 
     public List<VaccineResponseDTO> listByPet(Long petId) {
-        return vaccineRepository.findByPetId(petId)
+        return vaccineRepository.findByPetIdAndActiveTrue(petId)
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
@@ -63,6 +69,10 @@ public class VaccineService {
     public VaccineResponseDTO update(Long id, VaccineDTO dto) {
         VaccineEntity v = vaccineRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Vacina não encontrada"));
+        
+        if (!v.isActive()) {
+            throw new RuntimeException("Vacina não encontrada");
+        }
 
         PetEntity pet = petRepository.findById(dto.petId())
                 .orElseThrow(() -> new RuntimeException("Pet não encontrado"));
@@ -81,9 +91,12 @@ public class VaccineService {
     public void delete(Long id) {
         VaccineEntity v = vaccineRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Vacina não encontrada"));
+        
+        if (!v.isActive()) {
+            throw new RuntimeException("Vacina não encontrada");
+        }
 
         v.setActive(false);
-
         vaccineRepository.save(v);
     }
 
@@ -91,6 +104,7 @@ public class VaccineService {
         return new VaccineResponseDTO(
                 v.getId(),
                 v.getPet().getId(),
+                v.getPet().getName(),
                 v.getVaccineName(),
                 v.getAppliedDate(),
                 v.getNextDoseDate(),

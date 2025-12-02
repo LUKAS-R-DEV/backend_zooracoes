@@ -48,16 +48,19 @@ public class PetService {
                 pet.getBreed(),
                 pet.getWeight(),
                 pet.getBirthDate(),
-                tutor.getId()
+                tutor.getId(),
+                tutor.getName()
+                
         );
     }
 
     public List<PetResponseDTO> listAll() {
-        return petRepository.findAll()
+        return petRepository.findByActiveTrue(org.springframework.data.domain.Pageable.unpaged())
+                .getContent()
                 .stream()
                 .map(p -> new PetResponseDTO(
                         p.getId(), p.getName(), p.getSpecies(), p.getBreed(),
-                        p.getWeight(), p.getBirthDate(), p.getTutor().getId()))
+                        p.getWeight(), p.getBirthDate(), p.getTutor().getId(), p.getTutor().getName()))
                 .collect(Collectors.toList());
     }
 
@@ -68,7 +71,7 @@ public class PetService {
                 .stream()
                 .map(p -> new PetResponseDTO(
                         p.getId(), p.getName(), p.getSpecies(), p.getBreed(),
-                        p.getWeight(), p.getBirthDate(), p.getTutor().getId()))
+                        p.getWeight(), p.getBirthDate(), p.getTutor().getId(), p.getTutor().getName()))
                 .collect(Collectors.toList());
         
         return PageResponseDTO.of(
@@ -83,6 +86,10 @@ public class PetService {
     public PetResponseDTO findById(Long id) {
         PetEntity pet = petRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pet não encontrado"));
+        
+        if (!pet.isActive()) {
+            throw new RuntimeException("Pet não encontrado");
+        }
 
         return new PetResponseDTO(
                 pet.getId(),
@@ -91,22 +98,27 @@ public class PetService {
                 pet.getBreed(),
                 pet.getWeight(),
                 pet.getBirthDate(),
-                pet.getTutor().getId()
+                pet.getTutor().getId(),
+                pet.getTutor().getName()
         );
     }
 
     public List<PetResponseDTO> listByTutor(Long tutorId) {
-        return petRepository.findByTutor_Id(tutorId)
+        return petRepository.findByTutor_IdAndActiveTrue(tutorId)
                 .stream()
                 .map(p -> new PetResponseDTO(
                         p.getId(), p.getName(), p.getSpecies(), p.getBreed(),
-                        p.getWeight(), p.getBirthDate(), p.getTutor().getId()))
+                        p.getWeight(), p.getBirthDate(), p.getTutor().getId(), p.getTutor().getName()))
                 .collect(Collectors.toList());
     }
 
     public PetResponseDTO update(Long id, PetDTO dto) {
         PetEntity pet = petRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pet não encontrado"));
+        
+        if (!pet.isActive()) {
+            throw new RuntimeException("Pet não encontrado");
+        }
 
         TutorEntity tutor = tutorRepository.findById(dto.tutorId())
                 .orElseThrow(() -> new RuntimeException("Tutor não encontrado"));
@@ -122,13 +134,17 @@ public class PetService {
 
         return new PetResponseDTO(
                 pet.getId(), pet.getName(), pet.getSpecies(), pet.getBreed(),
-                pet.getWeight(), pet.getBirthDate(), tutor.getId()
+                pet.getWeight(), pet.getBirthDate(), tutor.getId(), tutor.getName()
         );
     }
 
     public void delete(Long id) {
         PetEntity pet = petRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pet não encontrado"));
+        
+        if (!pet.isActive()) {
+            throw new RuntimeException("Pet não encontrado");
+        }
 
         pet.setActive(false);
         petRepository.save(pet);

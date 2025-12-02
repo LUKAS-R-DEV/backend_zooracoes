@@ -1,13 +1,15 @@
 import axios from 'axios'
+import { API_CONFIG } from './config'
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.DEV ? '/api' : (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'),
+  baseURL: API_CONFIG.baseURL,
   headers: {
     'Content-Type': 'application/json'
   },
-  timeout: 10000
+  timeout: API_CONFIG.timeout
 })
 
+// Interceptor de requisição - adiciona token
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token')
@@ -21,6 +23,7 @@ apiClient.interceptors.request.use(
   }
 )
 
+// Interceptor de resposta - trata erros de autenticação
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -31,8 +34,6 @@ apiClient.interceptors.response.use(
     return Promise.reject(error)
   }
 )
-
-export const useApi = () => apiClient
 
 export default apiClient
 

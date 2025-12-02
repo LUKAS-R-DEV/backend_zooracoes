@@ -49,6 +49,12 @@ public class ScheduleController {
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('GESTOR')")
+    @PatchMapping("/{id}/status")
+    public ScheduleResponseDTO updateStatus(@PathVariable Long id, @RequestBody com.zooracoes_api.dtos.StatusUpdateDTO dto) {
+        return service.updateStatus(id, com.zooracoes_api.entities.ScheduleStatus.valueOf(dto.status()));
+    }
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('GESTOR')")
     @DeleteMapping("/{id}")
     public String cancel(@PathVariable Long id) {
         service.cancel(id);

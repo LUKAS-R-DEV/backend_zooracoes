@@ -42,7 +42,8 @@ public class TutorService {
     }
 
     public List<TutorResponseDTO> findAll() {
-        return repository.findAll()
+        return repository.findByActiveTrue(org.springframework.data.domain.Pageable.unpaged())
+                .getContent()
                 .stream()
                 .map(t -> new TutorResponseDTO(
                         t.getId(), t.getName(), t.getEmail(), t.getPhone(), t.getAddress()
@@ -51,7 +52,8 @@ public class TutorService {
     }
 
     public PageResponseDTO<TutorResponseDTO> findAllPaginated(Pageable pageable) {
-        Page<TutorEntity> page = repository.findAll(pageable);
+        // Filtra apenas tutores ativos
+        Page<TutorEntity> page = repository.findByActiveTrue(pageable);
         
         List<TutorResponseDTO> content = page.getContent()
                 .stream()
@@ -72,6 +74,10 @@ public class TutorService {
     public TutorResponseDTO findById(Long id) {
         TutorEntity tutor = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tutor não encontrado"));
+        
+        if (!tutor.isActive()) {
+            throw new RuntimeException("Tutor não encontrado");
+        }
 
         return new TutorResponseDTO(
                 tutor.getId(),
@@ -85,6 +91,10 @@ public class TutorService {
     public TutorResponseDTO update(Long id, TutorDTO dto) {
         TutorEntity tutor = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tutor não encontrado"));
+        
+        if (!tutor.isActive()) {
+            throw new RuntimeException("Tutor não encontrado");
+        }
 
         tutor.setName(dto.name());
         tutor.setEmail(dto.email());
@@ -105,6 +115,10 @@ public class TutorService {
     public void delete(Long id) {
         TutorEntity tutor = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tutor não encontrado"));
+        
+        if (!tutor.isActive()) {
+            throw new RuntimeException("Tutor não encontrado");
+        }
 
         tutor.setActive(false);
         repository.save(tutor);

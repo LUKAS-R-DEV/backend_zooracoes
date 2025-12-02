@@ -18,4 +18,10 @@ public class ServiceEntity {
     private String description;
 
     private boolean active = true;
+
+    private Double price;
+
+    private Integer duration;
+
+    
 }
