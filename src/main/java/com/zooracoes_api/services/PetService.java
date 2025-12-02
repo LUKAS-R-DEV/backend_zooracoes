@@ -7,6 +7,9 @@ import com.zooracoes_api.entities.PetEntity;
 import com.zooracoes_api.entities.TutorEntity;
 import com.zooracoes_api.repositories.PetRepository;
 import com.zooracoes_api.repositories.TutorRepository;
+import com.zooracoes_api.repositories.ScheduleRepository;
+import com.zooracoes_api.repositories.VaccineRepository;
+import com.zooracoes_api.repositories.PrescriptionRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,10 +24,20 @@ public class PetService {
 
     private final PetRepository petRepository;
     private final TutorRepository tutorRepository;
+    private final ScheduleRepository scheduleRepository;
+    private final VaccineRepository vaccineRepository;
+    private final PrescriptionRepository prescriptionRepository;
 
-    public PetService(PetRepository petRepository, TutorRepository tutorRepository) {
+    public PetService(PetRepository petRepository, 
+                     TutorRepository tutorRepository,
+                     ScheduleRepository scheduleRepository,
+                     VaccineRepository vaccineRepository,
+                     PrescriptionRepository prescriptionRepository) {
         this.petRepository = petRepository;
         this.tutorRepository = tutorRepository;
+        this.scheduleRepository = scheduleRepository;
+        this.vaccineRepository = vaccineRepository;
+        this.prescriptionRepository = prescriptionRepository;
     }
 
     public PetResponseDTO create(PetDTO dto) {
@@ -146,6 +159,28 @@ public class PetService {
             throw new RuntimeException("Pet não encontrado");
         }
 
+        // Desativar agendamentos relacionados
+        scheduleRepository.findByPetIdAndActiveTrue(id)
+                .forEach(schedule -> {
+                    schedule.setActive(false);
+                    scheduleRepository.save(schedule);
+                });
+
+        // Desativar vacinas relacionadas
+        vaccineRepository.findByPetIdAndActiveTrue(id)
+                .forEach(vaccine -> {
+                    vaccine.setActive(false);
+                    vaccineRepository.save(vaccine);
+                });
+
+        // Desativar prescrições relacionadas
+        prescriptionRepository.findByPetIdAndActiveTrue(id)
+                .forEach(prescription -> {
+                    prescription.setActive(false);
+                    prescriptionRepository.save(prescription);
+                });
+
+        // Desativar o pet
         pet.setActive(false);
         petRepository.save(pet);
     }

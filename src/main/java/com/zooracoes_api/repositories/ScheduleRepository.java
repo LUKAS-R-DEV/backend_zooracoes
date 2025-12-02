@@ -17,6 +17,8 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
     
     Page<ScheduleEntity> findByActiveTrue(Pageable pageable);
     
+    List<ScheduleEntity> findByPetIdAndActiveTrue(Long petId);
+    
     @Query("SELECT s FROM ScheduleEntity s WHERE s.active = true AND " +
            "(:date IS NULL OR CAST(s.dateTime AS date) = :date) AND " +
            "(:serviceId IS NULL OR s.service.id = :serviceId)")
